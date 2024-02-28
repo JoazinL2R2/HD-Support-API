@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34322.80
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HD-Support-API", "HD-Support-API\HD-Support-API.csproj", "{48392B4B-4E15-4A3C-93FD-2C6D8B9432E9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{48392B4B-4E15-4A3C-93FD-2C6D8B9432E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48392B4B-4E15-4A3C-93FD-2C6D8B9432E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48392B4B-4E15-4A3C-93FD-2C6D8B9432E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48392B4B-4E15-4A3C-93FD-2C6D8B9432E9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A37BC8F8-16E9-478A-ABF8-8518946EA77C}
+	EndGlobalSection
+EndGlobal
