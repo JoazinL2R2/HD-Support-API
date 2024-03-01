@@ -1,4 +1,6 @@
 using HD_Support_API.Components;
+using HD_Support_API.Repositorios;
+using HD_Support_API.Repositorios.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -12,6 +14,10 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<BancoContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddScoped<IEquipamentosRepositorio, EquipamentoRepositorio>();
+builder.Services.AddScoped<IEmprestimoRepositorio, EmprestimoRepositorio>();
+builder.Services.AddScoped<IFuncionarioRepositorio, FuncionarioRepositorio>();
+builder.Services.AddScoped<IHelpDeskRepositorio, HelpDeskRepositorio>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
