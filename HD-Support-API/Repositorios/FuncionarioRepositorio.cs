@@ -1,6 +1,7 @@
 ﻿using HD_Support_API.Components;
 using HD_Support_API.Models;
 using HD_Support_API.Repositorios.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace HD_Support_API.Repositorios
 {
@@ -11,29 +12,64 @@ namespace HD_Support_API.Repositorios
         {
             _contexto = contexto;
         }
-        public Task<Funcionarios> AdicionarFuncionario(Funcionarios funcionarios)
+        public async Task<Funcionarios> AdicionarFuncionario(Funcionarios funcionarios)
         {
-            throw new NotImplementedException();
+            _contexto.Funcionario.AddAsync(funcionarios);
+            _contexto.SaveChanges();
+            return funcionarios;
         }
 
-        public Task<Funcionarios> AtualizarFuncionario(Funcionarios funcionarios, int id)
+        public async Task<Funcionarios> AtualizarFuncionario(Funcionarios funcionarios, int id)
         {
-            throw new NotImplementedException();
+            Funcionarios FuncionariosPorID = await BuscarFuncionarioPorID(id);
+
+            if (FuncionariosPorID == null)
+            {
+                throw new Exception($"Funcionario de Id:{id} não encontrado na base de dados.");
+            }
+            FuncionariosPorID.Nome = funcionarios.Nome;
+            FuncionariosPorID.Email = funcionarios.Email;
+            FuncionariosPorID.Telefone = funcionarios.Telefone;
+            FuncionariosPorID.Telegram = funcionarios.Telegram;
+            FuncionariosPorID.Categoria = funcionarios.Categoria;
+            FuncionariosPorID.StatusFuncionario = funcionarios.StatusFuncionario;
+
+            _contexto.Funcionario.Update(FuncionariosPorID);
+            await _contexto.SaveChangesAsync();
+
+            return FuncionariosPorID;
         }
 
-        public Task<Funcionarios> BuscarFuncionario(int nome, string telefone)
+        public async Task<Funcionarios> BuscarFuncionario(string nome, string telefone)
         {
-            throw new NotImplementedException();
+            return await _contexto.Funcionario.FirstOrDefaultAsync(
+            x => x.Nome == nome
+            || x.Telefone == telefone);
         }
 
-        public Task<bool> ExcluirFuncionario(int id)
+        public async Task<Funcionarios> BuscarFuncionarioPorID(int id)
         {
-            throw new NotImplementedException();
+            return await _contexto.Funcionario.FirstOrDefaultAsync(
+                x => x.Id == id);
         }
 
-        public Task<List<Funcionarios>> ListarFuncionario()
+        public async Task<bool> ExcluirFuncionario(int id)
         {
-            throw new NotImplementedException();
+            Funcionarios FuncionarioPorId = await BuscarFuncionarioPorID(id);
+
+            if (FuncionarioPorId == null)
+            {
+                throw new Exception($"Funcionario de Id:{id} não encontrado na base de dados.");
+            }
+            _contexto.Remove(FuncionarioPorId);
+            await _contexto.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<List<Funcionarios>> ListarFuncionario()
+        {
+            return await _contexto.Funcionario.ToListAsync();
         }
     }
 }

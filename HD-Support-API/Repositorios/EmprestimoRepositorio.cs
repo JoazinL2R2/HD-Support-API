@@ -1,6 +1,7 @@
 ﻿using HD_Support_API.Components;
 using HD_Support_API.Models;
 using HD_Support_API.Repositorios.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace HD_Support_API.Repositorios
 {
@@ -11,29 +12,59 @@ namespace HD_Support_API.Repositorios
         {
             _contexto = contexto;
         }
-        public Task<Emprestimos> AdicionarEmprestimo(Emprestimos emprestimo)
+        public async Task<Emprestimos> AdicionarEmprestimo(Emprestimos emprestimo)
         {
-            throw new NotImplementedException();
+            _contexto.Emprestimo.AddAsync(emprestimo);
+            _contexto.SaveChangesAsync();
+            return emprestimo;
         }
 
-        public Task<Emprestimos> AtualizarEmprestimo(Emprestimos emprestimo, int id)
+        public async Task<Emprestimos> AtualizarEmprestimo(Emprestimos emprestimo, int id)
         {
-            throw new NotImplementedException();
+            Emprestimos emprestimosPorId = await BuscarEmprestimosPorID(id);
+
+            if (emprestimosPorId == null)
+            {
+                throw new Exception($"Equipamento de Id:{id} não encontrado na base de dados.");
+            }
+            emprestimosPorId.Equipamento = emprestimo.Equipamento;
+            emprestimosPorId.Funcionario = emprestimo.Funcionario;
+
+            _contexto.Emprestimo.Update(emprestimosPorId);
+            await _contexto.SaveChangesAsync();
+
+            return emprestimosPorId;
         }
 
-        public Task<Emprestimos> BuscarEmprestimos(int idPatrimonio, string nome)
+        public async Task<Emprestimos> BuscarEmprestimos(int idPatrimonio, string nome)
         {
-            throw new NotImplementedException();
+            return _contexto.Emprestimo.FirstOrDefault(
+                x => x.Equipamento.IdPatrimonio == idPatrimonio ||
+                x.Funcionario.Nome == nome);
         }
 
-        public Task<bool> ExcluirEmprestimo(int id)
+        public async Task<Emprestimos> BuscarEmprestimosPorID(int id)
         {
-            throw new NotImplementedException();
+            return _contexto.Emprestimo.FirstOrDefault(x => x.Id == id);
         }
 
-        public Task<List<Emprestimos>> ListarEmprestimos()
+        public async Task<bool> ExcluirEmprestimo(int id)
         {
-            throw new NotImplementedException();
+            Emprestimos emprestimoPorId = await BuscarEmprestimosPorID(id);
+
+            if (emprestimoPorId == null)
+            {
+                throw new Exception($"Emprestimo de Id:{id} não encontrado na base de dados.");
+            }
+            _contexto.Remove(emprestimoPorId);
+            await _contexto.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<List<Emprestimos>> ListarEmprestimos()
+        {
+            return await _contexto.Emprestimo.ToListAsync();
         }
     }
 }
