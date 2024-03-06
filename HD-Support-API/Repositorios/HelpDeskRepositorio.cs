@@ -1,6 +1,8 @@
 ﻿using HD_Support_API.Components;
 using HD_Support_API.Models;
 using HD_Support_API.Repositorios.Interfaces;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 
 namespace HD_Support_API.Repositorios
 {
@@ -11,29 +13,60 @@ namespace HD_Support_API.Repositorios
         {
             _contexto = contexto;
         }
-        public Task<HelpDesk> AdicionarHelpDesk(HelpDesk helpDesk)
+        public async Task<HelpDesk> AdicionarHelpDesk(HelpDesk helpDesk)
         {
-            throw new NotImplementedException();
+            _contexto.HelpDesk.AddAsync(helpDesk);
+            _contexto.SaveChanges();
+            return helpDesk;
         }
 
-        public Task<HelpDesk> AtualizarHelpDesk(HelpDesk helpDesk, int id)
+        public async Task<HelpDesk> AtualizarHelpDesk(HelpDesk helpDesk, int id)
         {
-            throw new NotImplementedException();
+            HelpDesk buscarId = await BuscarHelpDeskPorID(id);
+
+            if (buscarId == null)
+            {
+                throw new Exception($"HelpDesk de Id:{id} não encontrado na base de dados.");
+            }
+            buscarId.Senha = helpDesk.Senha;
+            buscarId.Nome = helpDesk.Nome;
+            buscarId.Email = helpDesk.Email;
+
+            _contexto.HelpDesk.Update(buscarId);
+            await _contexto.SaveChangesAsync();
+
+            return buscarId;
         }
 
-        public Task<HelpDesk> BuscarHelpDesk(int nome)
+        public async Task<HelpDesk> BuscarHelpDesk(string nome)
         {
-            throw new NotImplementedException();
+            return await _contexto.HelpDesk.FirstOrDefaultAsync(
+                x => x.Nome == nome);
         }
 
-        public Task<bool> ExcluirHelpDesk(int id)
+        public async Task<HelpDesk> BuscarHelpDeskPorID(int id)
         {
-            throw new NotImplementedException();
+            return await _contexto.HelpDesk.FirstOrDefaultAsync(
+                x => x.Id == id);
         }
 
-        public Task<List<HelpDesk>> ListarHelpDesk()
+        public async Task<bool> ExcluirHelpDesk(int id)
         {
-            throw new NotImplementedException();
+            HelpDesk HelpDeskPorId = await BuscarHelpDeskPorID(id);
+
+            if (BuscarHelpDeskPorID == null)
+            {
+                throw new Exception($"HelpDesk de Id:{id} não encontrado na base de dados.");
+            }
+            _contexto.Remove(HelpDeskPorId);
+            await _contexto.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<List<HelpDesk>> ListarHelpDesk()
+        {
+            return await _contexto.HelpDesk.ToListAsync();
         }
     }
 }
