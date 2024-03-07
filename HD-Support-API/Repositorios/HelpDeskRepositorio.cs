@@ -16,7 +16,7 @@ namespace HD_Support_API.Repositorios
         public async Task<HelpDesk> AdicionarHelpDesk(HelpDesk helpDesk)
         {
             _contexto.HelpDesk.AddAsync(helpDesk);
-            _contexto.SaveChanges();
+            await _contexto.SaveChangesAsync();
             return helpDesk;
         }
 
