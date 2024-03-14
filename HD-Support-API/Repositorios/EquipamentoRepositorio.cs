@@ -21,7 +21,7 @@ namespace HD_Support_API.Repositorios
 
         public async Task<Equipamentos> AtualizarEquipamento(Equipamentos equipamento, int id)
         {
-            Equipamentos equipamentosPorId = await BuscarEquipamentos(id);
+            Equipamentos equipamentosPorId = await BuscarEquipamentosPorId(id);
 
             if(equipamentosPorId == null)
             {
@@ -41,12 +41,21 @@ namespace HD_Support_API.Repositorios
 
         public async Task<Equipamentos> BuscarEquipamentos(int idPatrimonio)
         {
-            return _contexto.Equipamento.FirstOrDefault(x => x.IdPatrimonio == idPatrimonio);
+            return  _contexto.Equipamento.FirstOrDefault(x => x.IdPatrimonio == idPatrimonio);
+        }        
+        public async Task<Equipamentos> BuscarEquipamentosPorId(int id)
+        {
+            var busca =  _contexto.Equipamento.FirstOrDefault(x => x.Id == id);
+            if(busca == null)
+            {
+                throw new Exception($"Equipamento com o ID {id} não encontrado");
+            }
+            return busca;
         }
 
         public async Task<bool> ExcluirEquipamento(int id)
         {
-            Equipamentos equipamentosPorId = await BuscarEquipamentos(id);
+            Equipamentos equipamentosPorId = await BuscarEquipamentosPorId(id);
 
             if (equipamentosPorId == null)
             {

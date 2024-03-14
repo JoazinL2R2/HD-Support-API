@@ -10,5 +10,6 @@ namespace HD_Support_API.Repositorios.Interfaces
         Task<HelpDesk> AdicionarHelpDesk(HelpDesk helpDesk);
         Task<HelpDesk> AtualizarHelpDesk(HelpDesk helpDesk, int id);
         Task<bool> ExcluirHelpDesk(int id);
+        Task<bool> Login(string email, string senha);
     }
 }

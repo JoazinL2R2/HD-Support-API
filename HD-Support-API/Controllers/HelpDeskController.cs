@@ -1,8 +1,9 @@
 ﻿using HD_Support_API.Models;
 using HD_Support_API.Repositorios.Interfaces;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace HD_Support_API.Controllers
 {
@@ -79,7 +80,19 @@ namespace HD_Support_API.Controllers
 
             return Ok(ExcluirPerfil);
         }
+
+        [HttpPost]
+        [Route("Login-HelpDesk")]
+        public async Task<IActionResult> Login([FromBody] HelpDesk request)
+        {
+            var result = await _repositorio.Login(request.Email, request.Senha);
+
+            if (result)
+            {
+                return Ok("Autenticado");
+            }
+
+            return Unauthorized("Não autorizado");
+        }
     }
-
 }
-

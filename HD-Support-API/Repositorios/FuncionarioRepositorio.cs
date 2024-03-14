@@ -42,15 +42,25 @@ namespace HD_Support_API.Repositorios
 
         public async Task<Funcionarios> BuscarFuncionario(string nome, string telefone)
         {
-            return await _contexto.Funcionario.FirstOrDefaultAsync(
+            var busca =  await _contexto.Funcionario.FirstOrDefaultAsync(
             x => x.Nome == nome
             || x.Telefone == telefone);
+            if(busca == null)
+            {
+                throw new Exception("Funcionario não encontrado");
+            }
+            return busca;
         }
 
         public async Task<Funcionarios> BuscarFuncionarioPorID(int id)
         {
-            return await _contexto.Funcionario.FirstOrDefaultAsync(
+            var busca =  await _contexto.Funcionario.FirstOrDefaultAsync(
                 x => x.Id == id);
+            if(busca == null)
+            {
+                throw new Exception($"Funcionario com o Id:{id} não encontrado");
+            }
+            return busca;
         }
 
         public async Task<bool> ExcluirFuncionario(int id)
