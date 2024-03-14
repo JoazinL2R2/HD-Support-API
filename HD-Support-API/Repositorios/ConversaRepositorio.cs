@@ -3,6 +3,7 @@ using HD_Support_API.Components;
 using HD_Support_API.Models;
 using HD_Support_API.Repositorios.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace HD_Support_API.Repositorios
 {
@@ -70,6 +71,17 @@ namespace HD_Support_API.Repositorios
                 MensagensLista[i].Mensagem = AesOperation.Descriptar(conversaPorId.Criptografia, MensagensLista[i].Mensagem);
             }
             return MensagensLista;
+        }
+
+        public async Task<bool> VerificarMensagemNova(int idConversa, int qtdMensagensAtual)
+        {
+            int qtdMensagens = _contexto.Mensagens.Where(x => x.ConversaId == idConversa).Count();
+            if(qtdMensagens > qtdMensagensAtual)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }
