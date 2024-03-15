@@ -57,13 +57,13 @@ namespace HD_Support_API.Repositorios
         }
         public async Task<bool> ExcluirMensagem(int id)
         {
-            Conversa conversaPorId = await BuscarConversaPorId(id);
+            Mensagens mensagem = await _contexto.Mensagens.FindAsync(id);
 
-            if (conversaPorId == null)
+            if (mensagem == null)
             {
-                throw new Exception($"Conversa de Id:{id} não encontrado na base de dados.");
+                throw new Exception($"Mensagem de Id:{id} não encontrado na base de dados.");
             }
-            _contexto.Remove(conversaPorId);
+            _contexto.Remove(mensagem);
             await _contexto.SaveChangesAsync();
 
             return true;
