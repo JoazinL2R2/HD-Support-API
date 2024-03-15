@@ -17,7 +17,9 @@ namespace HD_Support_API.Repositorios
         }
         public async Task<Conversa> IniciarConversa(Conversa conversa)
         {
-            conversa.Criptografia = AesOperation.gerarChave(20);
+            conversa.Criptografia = AesOperation.gerarChave(32);
+            conversa.Funcionario = await _contexto.HelpDesk.FindAsync(conversa.FuncionariosId);
+            conversa.Cliente = await _contexto.HelpDesk.FindAsync(conversa.ClienteId);
             _contexto.Conversa.AddAsync(conversa);
             _contexto.SaveChangesAsync();
             return conversa;
@@ -26,6 +28,8 @@ namespace HD_Support_API.Repositorios
         {
             Conversa conversa = await BuscarConversaPorId(idConversa);
             mensagem.Mensagem = AesOperation.Encriptar(conversa.Criptografia, mensagem.Mensagem);
+            mensagem.ConversaId = idConversa;
+            mensagem.Usuario = await _contexto.HelpDesk.FindAsync(mensagem.UsuarioId);
             _contexto.Mensagens.AddAsync(mensagem);
             _contexto.SaveChangesAsync();
             return conversa;

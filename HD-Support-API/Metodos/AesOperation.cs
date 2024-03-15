@@ -62,7 +62,7 @@ namespace EncryptionDecryptionUsingSymmetricKey
         private static Random random = new Random();
         public static string gerarChave(int length)
         {
-            const string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            const string characters = "abcdefghijklmnopqrstuvwxyz0123456789";
             return new string(
                 Enumerable.Repeat(characters, length).Select(s => s[random.Next(s.Length)]).ToArray());
         }
