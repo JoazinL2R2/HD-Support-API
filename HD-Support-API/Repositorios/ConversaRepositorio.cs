@@ -1,5 +1,6 @@
 ﻿using EncryptionDecryptionUsingSymmetricKey;
 using HD_Support_API.Components;
+using HD_Support_API.Enums;
 using HD_Support_API.Models;
 using HD_Support_API.Repositorios.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -43,7 +44,9 @@ namespace HD_Support_API.Repositorios
             {
                 throw new Exception($"Conversa de Id:{id} não encontrado na base de dados.");
             }
-            _contexto.Remove(conversaPorId);
+            conversaPorId.Status = StatusConversa.Encerrado;
+
+            _contexto.Conversa.Update(conversaPorId);
             await _contexto.SaveChangesAsync();
 
             return true;

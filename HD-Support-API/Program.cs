@@ -18,6 +18,7 @@ builder.Services.AddScoped<IEquipamentosRepositorio, EquipamentoRepositorio>();
 builder.Services.AddScoped<IEmprestimoRepositorio, EmprestimoRepositorio>();
 builder.Services.AddScoped<IFuncionarioRepositorio, FuncionarioRepositorio>();
 builder.Services.AddScoped<IHelpDeskRepositorio, HelpDeskRepositorio>();
+builder.Services.AddScoped<IConversaRepositorio, ConversaRepositorio>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
