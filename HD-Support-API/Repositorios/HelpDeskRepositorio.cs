@@ -1,4 +1,5 @@
 ﻿using HD_Support_API.Components;
+using HD_Support_API.Enums;
 using HD_Support_API.Models;
 using HD_Support_API.Repositorios.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -94,6 +95,19 @@ namespace HD_Support_API.Repositorios
                 return true;
             }
             return false;
+        }
+
+        public async Task<bool> AtualizarStatus(int id, int status)
+        {
+            var busca = await _contexto.HelpDesk.FirstOrDefaultAsync(x => x.Id == id);
+            if (busca == null)
+            {
+                throw new Exception("ID não encontrado.");
+            }
+            StatusHelpDeskConversa statusConversa = (StatusHelpDeskConversa)status;
+            busca.StatusConversa = statusConversa;
+            _contexto.HelpDesk.Update(busca);
+            return true;
         }
     }
 }

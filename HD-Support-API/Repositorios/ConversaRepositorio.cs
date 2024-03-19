@@ -18,8 +18,15 @@ namespace HD_Support_API.Repositorios
         public async Task<Conversa> IniciarConversa(Conversa conversa)
         {
             conversa.Criptografia = AesOperation.gerarChave(32);
-            conversa.Funcionario = await _contexto.HelpDesk.FindAsync(conversa.FuncionariosId);
-            conversa.Cliente = await _contexto.HelpDesk.FindAsync(conversa.ClienteId);
+            HelpDesk cliente = await _contexto.HelpDesk.FindAsync(conversa.ClienteId);
+            /*HelpDesk funcionario = await _contexto.HelpDesk.FindAsync(conversa.FuncionariosId);
+            //atualizando status do funcionário
+            if (conversa.TipoConversa != TipoConversa.Conversa) {
+                funcionario.Status = StatusHelpDesk.Ocupado;
+                _contexto.HelpDesk.Update(funcionario);
+            }
+            conversa.Funcionario = funcionario;*/
+            conversa.Cliente = cliente;
             _contexto.Conversa.AddAsync(conversa);
             _contexto.SaveChangesAsync();
             return conversa;
@@ -49,6 +56,12 @@ namespace HD_Support_API.Repositorios
                 throw new Exception($"Conversa de Id:{id} não encontrado na base de dados.");
             }
             conversaPorId.Status = StatusConversa.Encerrado;
+            if(conversaPorId.TipoConversa != TipoConversa.Conversa)
+            {
+                HelpDesk funcionario = conversaPorId.Funcionario;
+                funcionario.Status = StatusHelpDesk.Disponivel;
+                _contexto.HelpDesk.Update(funcionario);
+            }
 
             _contexto.Conversa.Update(conversaPorId);
             await _contexto.SaveChangesAsync();
@@ -89,6 +102,56 @@ namespace HD_Support_API.Repositorios
             }
 
             return false;
+        }
+
+        public async Task<bool> AceitarChamado(int idConversa, int idFuncionario)
+        {
+            HelpDesk funcionario = await _contexto.HelpDesk.FindAsync(idFuncionario);
+            if (funcionario == null)
+            {
+                throw new Exception($"Funcionário de Id:{idFuncionario} não encontrado na base de dados.");
+            }
+            
+            Conversa conversa = await BuscarConversaPorId(idConversa);
+            if (conversa == null)
+            {
+                throw new Exception($"Conversa de Id:{idConversa} não encontrado na base de dados.");
+            }
+
+            conversa.Funcionario = funcionario;
+            conversa.FuncionariosId = idFuncionario;
+            if(conversa.TipoConversa == TipoConversa.HelpDesk)
+            {
+                funcionario.Status = StatusHelpDesk.Ocupado;
+            }
+
+            _contexto.HelpDesk.Update(funcionario);
+            _contexto.Conversa.Update(conversa);
+
+            return true;
+        }
+
+        public async Task<List<Conversa>> ListarChamados(int tipo, bool aceito = false)
+        {
+            TipoConversa tipoConversa = (TipoConversa)tipo;
+            List<Conversa> ConversaLista;
+            if (!aceito)
+            {
+                ConversaLista = await _contexto.Conversa.Where(x => x.TipoConversa == tipoConversa && x.FuncionariosId==null).ToListAsync();
+            }
+            else
+            {
+                ConversaLista = await _contexto.Conversa.Where(x => x.TipoConversa == tipoConversa && x.FuncionariosId!=null).ToListAsync();
+            }
+            
+            return ConversaLista;
+        }
+
+        public async Task<List<Conversa>> ListarConversas(int idUsuario)
+        {
+            List<Conversa> ConversaLista = await _contexto.Conversa.Where(x => x.FuncionariosId == idUsuario || x.ClienteId == idUsuario).ToListAsync();
+
+            return ConversaLista;
         }
     }
 }
