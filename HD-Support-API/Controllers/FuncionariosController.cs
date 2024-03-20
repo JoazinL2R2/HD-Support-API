@@ -71,7 +71,7 @@ namespace HD_Support_API.Controllers
         {
             var Excluir = await _repositorio.ExcluirFuncionario(id);
 
-            if (Excluir == null)
+            if (Excluir == false)
             {
                 return NotFound($"Cadastro com ID:{id} não encontrado");
             }

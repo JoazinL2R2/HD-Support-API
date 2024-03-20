@@ -137,7 +137,7 @@ namespace HD_Support_API.Repositorios
         {
             TipoConversa tipoConversa = (TipoConversa)tipo;
             List<Conversa> ConversaLista;
-            if (!aceito)
+            if (aceito)
             {
                 ConversaLista = await _contexto.Conversa.Where(x => x.TipoConversa == tipoConversa && x.FuncionariosId==null).ToListAsync();
             }
