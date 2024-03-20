@@ -4,7 +4,6 @@ using HD_Support_API.Repositorios.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Adicione serviços ao contêiner.
@@ -20,13 +19,20 @@ builder.Services.AddScoped<IFuncionarioRepositorio, FuncionarioRepositorio>();
 builder.Services.AddScoped<IHelpDeskRepositorio, HelpDeskRepositorio>();
 builder.Services.AddScoped<IConversaRepositorio, ConversaRepositorio>();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+//suporte a CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin", builder =>
+        builder.WithOrigins("http://localhost:3000")
+               .AllowAnyMethod()
+               .AllowAnyHeader());
+});
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure o pipeline de solicitação HTTP.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -36,6 +42,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseCors("AllowSpecificOrigin");
 
 app.MapControllers();
 
