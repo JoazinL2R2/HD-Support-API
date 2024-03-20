@@ -13,9 +13,9 @@ namespace HD_Support_API.Data.Map
             builder.Property(x => x.Email).IsRequired().HasMaxLength(255);
             builder.Property(x => x.Telegram).IsRequired().HasMaxLength(255);
             builder.Property(x => x.Telefone).IsRequired().HasMaxLength(255);
-            builder.Property(x => x.StatusFuncionario).IsRequired();
-            builder.Property(x => x.Categoria).IsRequired();
-            builder.Property(x => x.profissional_HD).IsRequired();
+            builder.Property(x => x.StatusFuncionario).IsRequired().HasMaxLength(255);
+            builder.Property(x => x.Categoria).IsRequired().HasMaxLength(255);
+            builder.Property(x => x.profissional_HD);
         }
     }
 }

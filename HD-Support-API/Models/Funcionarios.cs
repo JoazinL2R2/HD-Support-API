@@ -9,8 +9,8 @@ namespace HD_Support_API.Models
         public string Email { get; set; }
         public string Telegram { get; set; }
         public string Telefone { get; set; }
-        public StatusFuncionario StatusFuncionario { get; set; }
-        public CategoriaFuncionario Categoria { get; set; }
+        public string StatusFuncionario { get; set; }
+        public string Categoria { get; set; }
         public string? profissional_HD { get; set; }
     }
 }
