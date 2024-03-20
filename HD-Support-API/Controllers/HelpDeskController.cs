@@ -94,5 +94,14 @@ namespace HD_Support_API.Controllers
 
             return Unauthorized("Não autorizado");
         }
+
+        [HttpPut]
+        [Route("Atualizar-Status-HelpDesk/{id}")]
+        public async Task<IActionResult> AtualizarHelpDesk(int id, int status)
+        {
+            var result = await _repositorio.AtualizarStatus(id, status);
+
+            return Ok(result);
+        }
     }
 }

@@ -8,5 +8,7 @@ namespace HD_Support_API.Enums
         Ativo = 1,
         [Description("Encerrado")]
         Encerrado = 2,
+        [Description("Em espera")]
+        EmEspera = 3,
     }
 }

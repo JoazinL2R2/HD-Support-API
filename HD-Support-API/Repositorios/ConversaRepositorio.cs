@@ -26,6 +26,8 @@ namespace HD_Support_API.Repositorios
                 _contexto.HelpDesk.Update(funcionario);
             }
             conversa.Funcionario = funcionario;*/
+            StatusConversa StatusCorrigido = (StatusConversa)conversa.Status;
+            conversa.Status = StatusCorrigido;
             conversa.Cliente = cliente;
             _contexto.Conversa.AddAsync(conversa);
             _contexto.SaveChangesAsync();
@@ -127,7 +129,7 @@ namespace HD_Support_API.Repositorios
 
             _contexto.HelpDesk.Update(funcionario);
             _contexto.Conversa.Update(conversa);
-
+            await _contexto.SaveChangesAsync();
             return true;
         }
 
@@ -152,6 +154,27 @@ namespace HD_Support_API.Repositorios
             List<Conversa> ConversaLista = await _contexto.Conversa.Where(x => x.FuncionariosId == idUsuario || x.ClienteId == idUsuario).ToListAsync();
 
             return ConversaLista;
+        }
+
+        public async Task<bool> AtualizarStatusConversa(int idConversa, int status)
+        {
+            Conversa conversa = await BuscarConversaPorId(idConversa);
+            if (conversa == null)
+            {
+                throw new Exception($"Conversa de Id:{idConversa} não encontrado na base de dados.");
+            }
+            StatusConversa StatusCorrigido = (StatusConversa)status;
+            conversa.Status = StatusCorrigido;
+            if (StatusCorrigido == StatusConversa.EmEspera && conversa.FuncionariosId!=null)
+            {
+                HelpDesk funcionario = await _contexto.HelpDesk.FindAsync(conversa.FuncionariosId);
+                funcionario.Status = StatusHelpDesk.Disponivel;
+                _contexto.HelpDesk.Update(funcionario);
+            }
+            _contexto.Conversa.Update(conversa);
+            await _contexto.SaveChangesAsync();
+
+            return true;
         }
     }
 }

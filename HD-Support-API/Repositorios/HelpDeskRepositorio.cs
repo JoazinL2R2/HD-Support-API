@@ -107,6 +107,7 @@ namespace HD_Support_API.Repositorios
             StatusHelpDeskConversa statusConversa = (StatusHelpDeskConversa)status;
             busca.StatusConversa = statusConversa;
             _contexto.HelpDesk.Update(busca);
+            await _contexto.HelpDesk.ToListAsync();
             return true;
         }
     }

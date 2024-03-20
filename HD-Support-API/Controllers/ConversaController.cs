@@ -101,6 +101,38 @@ namespace HD_Support_API.Controllers
             var TemMensagemNova = await _repositorio.VerificarMensagemNova(idConversa, qtdMensagensAtual);
             return Ok(TemMensagemNova);
         }
+
+        [HttpPost]
+        [Route("Aceitar-Chamado")]
+        public async Task<IActionResult> AceitarChamado(int idConversa, int idFuncionario)
+        {
+            var ChamadoAceito = await _repositorio.AceitarChamado(idConversa, idFuncionario);
+            return Ok(ChamadoAceito);
+        }
+
+        [HttpGet]
+        [Route("Listar-Chamados")]
+        public async Task<IActionResult> ListarChamados(int tipo, bool aceito = false)
+        {
+            var Chamados = await _repositorio.ListarChamados(tipo, aceito);
+            return Ok(Chamados);
+        }
+
+        [HttpGet]
+        [Route("Listar-Conversas/{id}")]
+        public async Task<IActionResult> ListarConversas(int idUsuario)
+        {
+            var Conversas = await _repositorio.ListarConversas(idUsuario);
+            return Ok(Conversas);
+        }
+
+        [HttpPut]
+        [Route("Atualizar-Status-Conversa")]
+        public async Task<IActionResult> AtualizarStatusConversa(int idConversa, int status)
+        {
+            var atualizado = await _repositorio.AtualizarStatusConversa(idConversa, status);
+            return Ok(atualizado);
+        }
     }
 }
 

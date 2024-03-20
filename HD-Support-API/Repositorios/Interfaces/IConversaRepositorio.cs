@@ -10,6 +10,7 @@ namespace HD_Support_API.Repositorios.Interfaces
         Task<bool> TerminarConversa(int id);
         Task<bool> ExcluirMensagem(int id);
         Task<Conversa> BuscarConversaPorId(int id);
+        Task<bool> AtualizarStatusConversa(int idConversa, int status);
         Task<bool> VerificarMensagemNova(int idConversa, int qtMensagensAtual);
         Task<bool> AceitarChamado(int idConversa, int idFuncionario);
         Task<List<Conversa>> ListarConversas(int idUsuario);
