@@ -4,6 +4,7 @@ using HD_Support_API.Components;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HD_Support_API.Migrations
 {
     [DbContext(typeof(BancoContext))]
-    partial class BancoContextModelSnapshot : ModelSnapshot
+    [Migration("20240315173325_mensagem")]
+    partial class mensagem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,14 +46,10 @@ namespace HD_Support_API.Migrations
                     b.Property<DateTime>("Data_inicio")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("FuncionariosId")
-                        .IsRequired()
+                    b.Property<int>("FuncionariosId")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TipoConversa")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -204,12 +203,6 @@ namespace HD_Support_API.Migrations
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
-
-                    b.Property<int?>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("StatusConversa")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
