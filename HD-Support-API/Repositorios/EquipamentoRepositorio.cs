@@ -14,28 +14,37 @@ namespace HD_Support_API.Repositorios
         }
         public async Task<Equipamentos> AdicionarEquipamento(Equipamentos equipamento)
         {
-            await _contexto.Equipamento.AddAsync(equipamento);
-            _contexto.SaveChanges();
-            return equipamento;
+            var verificacao = _contexto.Equipamento.FirstOrDefault(x => x.IdPatrimonio == equipamento.IdPatrimonio);
+            if(verificacao == null)
+            {
+                await _contexto.Equipamento.AddAsync(equipamento);
+                _contexto.SaveChanges();
+                return equipamento;
+            }
+            throw new Exception($"O patrimônio com Id:{equipamento.IdPatrimonio} já está cadastrado.");
         }
 
         public async Task<Equipamentos> AtualizarEquipamento(Equipamentos equipamento, int id)
         {
             Equipamentos equipamentosPorId = await BuscarEquipamentosPorId(id);
-
-            if(equipamentosPorId == null)
+            var verificacao = _contexto.Equipamento.FirstOrDefault(x => x.IdPatrimonio == equipamento.IdPatrimonio);
+            if (equipamentosPorId == null)
             {
                 throw new Exception($"Equipamento de Id:{id} não encontrado na base de dados.");
             }
-            equipamentosPorId.IdPatrimonio = equipamento.IdPatrimonio;
-            equipamentosPorId.Modelo = equipamento.Modelo;
-            equipamentosPorId.Processador = equipamento.Processador;
-            equipamentosPorId.HeadSet = equipamento.HeadSet;
+            if(verificacao == null)
+            {
+                equipamentosPorId.IdPatrimonio = equipamento.IdPatrimonio;
+                equipamentosPorId.Modelo = equipamento.Modelo;
+                equipamentosPorId.Processador = equipamento.Processador;
+                equipamentosPorId.HeadSet = equipamento.HeadSet;
 
-            _contexto.Equipamento.Update(equipamentosPorId);
-            await _contexto.SaveChangesAsync();
+                _contexto.Equipamento.Update(equipamentosPorId);
+                await _contexto.SaveChangesAsync();
 
-            return equipamentosPorId;
+                return equipamentosPorId;
+            }
+            throw new Exception($"Equipamento de Id:{id} já cadastrado na base de dados.");
 
         }
 
@@ -55,13 +64,13 @@ namespace HD_Support_API.Repositorios
 
         public async Task<bool> ExcluirEquipamento(int id)
         {
-            Equipamentos equipamentosPorId = await BuscarEquipamentosPorId(id);
+            var busca = await BuscarEquipamentosPorId(id);
 
-            if (equipamentosPorId == null)
+            if (busca == null)
             {
                 throw new Exception($"Equipamento de Id:{id} não encontrado na base de dados.");
             }
-            _contexto.Remove(equipamentosPorId);
+            _contexto.Remove(busca);
             await _contexto.SaveChangesAsync();
 
             return true;

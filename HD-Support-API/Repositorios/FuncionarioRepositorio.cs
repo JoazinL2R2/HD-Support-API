@@ -14,9 +14,15 @@ namespace HD_Support_API.Repositorios
         }
         public async Task<Funcionarios> AdicionarFuncionario(Funcionarios funcionarios)
         {
-            _contexto.Funcionario.AddAsync(funcionarios);
-            _contexto.SaveChanges();
-            return funcionarios;
+            var verificar =  _contexto.Funcionario.FirstOrDefault(x => x.Email == funcionarios.Email);
+            if(verificar == null)
+            {
+                await _contexto.Funcionario.AddAsync(funcionarios);
+                _contexto.SaveChanges();
+                return funcionarios;
+            }
+            throw new Exception("Email já cadastrado, tente novamente.");
+
         }
 
         public async Task<Funcionarios> AtualizarFuncionario(Funcionarios funcionarios, int id)
@@ -27,17 +33,22 @@ namespace HD_Support_API.Repositorios
             {
                 throw new Exception($"Funcionario de Id:{id} não encontrado na base de dados.");
             }
-            FuncionariosPorID.Nome = funcionarios.Nome;
-            FuncionariosPorID.Email = funcionarios.Email;
-            FuncionariosPorID.Telefone = funcionarios.Telefone;
-            FuncionariosPorID.Telegram = funcionarios.Telegram;
-            FuncionariosPorID.Categoria = funcionarios.Categoria;
-            FuncionariosPorID.StatusFuncionario = funcionarios.StatusFuncionario;
+            var verificar =  _contexto.Funcionario.FirstOrDefault(x => x.Email == funcionarios.Email);
+            if(verificar == null)
+            {
+                FuncionariosPorID.Nome = funcionarios.Nome;
+                FuncionariosPorID.Email = funcionarios.Email;
+                FuncionariosPorID.Telefone = funcionarios.Telefone;
+                FuncionariosPorID.Telegram = funcionarios.Telegram;
+                FuncionariosPorID.Categoria = funcionarios.Categoria;
+                FuncionariosPorID.StatusFuncionario = funcionarios.StatusFuncionario;
 
-            _contexto.Funcionario.Update(FuncionariosPorID);
-            await _contexto.SaveChangesAsync();
+                _contexto.Funcionario.Update(FuncionariosPorID);
+                await _contexto.SaveChangesAsync();
 
-            return FuncionariosPorID;
+                return FuncionariosPorID;
+            }
+            throw new Exception($"Email já cadastrado, tente novamente.");
         }
 
         public async Task<Funcionarios> BuscarFuncionario(string nome, string telefone)
@@ -79,7 +90,12 @@ namespace HD_Support_API.Repositorios
 
         public async Task<List<Funcionarios>> ListarFuncionario()
         {
-            return await _contexto.Funcionario.ToListAsync();
+            var lista =  await _contexto.Funcionario.ToListAsync();
+            if(lista == null)
+            {
+                throw new Exception($"Nenhum funcionario registrado em nossa base de dados.");
+            }
+            return lista;
         }
     }
 }

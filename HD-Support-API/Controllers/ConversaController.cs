@@ -95,7 +95,7 @@ namespace HD_Support_API.Controllers
         }
 
         [HttpGet]
-        [Route("Verificar-Mensagem-Nova")]
+        [Route("Verificar-Mensagem-Nova/{idConversa}")]
         public async Task<IActionResult> VerificarMensagemNova(int idConversa, int qtdMensagensAtual)
         {
             var TemMensagemNova = await _repositorio.VerificarMensagemNova(idConversa, qtdMensagensAtual);
@@ -103,7 +103,7 @@ namespace HD_Support_API.Controllers
         }
 
         [HttpPost]
-        [Route("Aceitar-Chamado")]
+        [Route("Aceitar-Chamado/{idConversa}-{idFuncionario}")]
         public async Task<IActionResult> AceitarChamado(int idConversa, int idFuncionario)
         {
             var ChamadoAceito = await _repositorio.AceitarChamado(idConversa, idFuncionario);
@@ -119,7 +119,7 @@ namespace HD_Support_API.Controllers
         }
 
         [HttpGet]
-        [Route("Listar-Conversas/{id}")]
+        [Route("Listar-Conversas/{idUsuario}")]
         public async Task<IActionResult> ListarConversas(int idUsuario)
         {
             var Conversas = await _repositorio.ListarConversas(idUsuario);
@@ -127,7 +127,7 @@ namespace HD_Support_API.Controllers
         }
 
         [HttpPut]
-        [Route("Atualizar-Status-Conversa")]
+        [Route("Atualizar-Status-Conversa/{idConversa}")]
         public async Task<IActionResult> AtualizarStatusConversa(int idConversa, int status)
         {
             var atualizado = await _repositorio.AtualizarStatusConversa(idConversa, status);

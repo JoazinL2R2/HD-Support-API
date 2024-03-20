@@ -17,6 +17,6 @@ namespace HD_Support_API.Models
         public string Criptografia { get; set; }
         public StatusConversa Status {  get; set; }
         public DateTime Data_inicio {  get; set; }
-        public DateTime Data_conclusao { get; set; }
+        public DateTime? Data_conclusao { get; set; }
     }
 }
