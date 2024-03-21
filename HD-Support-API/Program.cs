@@ -22,8 +22,8 @@ builder.Services.AddScoped<IConversaRepositorio, ConversaRepositorio>();
 //suporte a CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowSpecificOrigin", builder =>
-        builder.WithOrigins("http://localhost:3000")
+    options.AddPolicy("OpenCorsPolicy", builder =>
+        builder.AllowAnyOrigin() // Isso permite requisições de qualquer origem
                .AllowAnyMethod()
                .AllowAnyHeader());
 });
@@ -33,17 +33,16 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
 
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.UseCors("AllowSpecificOrigin");
+app.UseCors("OpenCorsPolicy");
 
 app.MapControllers();
 
