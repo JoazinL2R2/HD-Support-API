@@ -107,7 +107,7 @@ namespace HD_Support_API.Controllers
         }
 
         [HttpPost]
-        [Route("Recuperar-Senha")]
+        [Route("Recuperacao-Senha")]
         public async Task<IActionResult> EnviarEmail(string email)
         {
             try
