@@ -1,4 +1,5 @@
-﻿using HD_Support_API.Components;
+﻿using EncryptionDecryptionUsingSymmetricKey;
+using HD_Support_API.Components;
 using HD_Support_API.Enums;
 using HD_Support_API.Models;
 using HD_Support_API.Repositorios.Interfaces;
@@ -20,6 +21,7 @@ namespace HD_Support_API.Repositorios
 
         public async Task<HelpDesk> AdicionarHelpDesk(HelpDesk helpDesk)
         {
+            helpDesk.Senha = AesOperation.CriarHash(helpDesk.Senha);
             _contexto.HelpDesk.AddAsync(helpDesk);
             await _contexto.SaveChangesAsync();
             return helpDesk;
@@ -90,7 +92,7 @@ namespace HD_Support_API.Repositorios
         }
         public async Task<bool> Login(string email, string senha)
         {
-            if (await _contexto.HelpDesk.AnyAsync(x => x.Email == email && x.Senha == senha))
+            if (await _contexto.HelpDesk.AnyAsync(x => x.Email == email && AesOperation.CriarHash(x.Senha) == senha))
             {
                 return true;
             }

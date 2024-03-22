@@ -4,7 +4,7 @@ namespace HD_Support_API.Models
 {
     public class Conversa
     {
-		public int Id {  get; set; }
+        public int Id { get; set; }
 
         // Relacionamento com Funcionarios empresa
         public HelpDesk? Funcionario { get; set; }
@@ -15,8 +15,8 @@ namespace HD_Support_API.Models
         public int ClienteId { get; set; }
         public TipoConversa? TipoConversa { get; set; }
         public string Criptografia { get; set; }
-        public StatusConversa Status {  get; set; }
-        public DateTime Data_inicio {  get; set; }
+        public StatusConversa Status { get; set; }
+        public DateTime Data_inicio { get; set; }
         public DateTime? Data_conclusao { get; set; }
     }
 }

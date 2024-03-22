@@ -10,6 +10,7 @@ namespace HD_Support_API.Controllers
     public class ConversaController : ControllerBase
     {
         private readonly IConversaRepositorio _repositorio;
+        
 
         public ConversaController(IConversaRepositorio repositorio)
         {

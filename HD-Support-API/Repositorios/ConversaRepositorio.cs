@@ -11,14 +11,18 @@ namespace HD_Support_API.Repositorios
     public class ConversaRepositorio : IConversaRepositorio
     {
         private readonly BancoContext _contexto;
+        private readonly string cripto = "criptografiahdsuportcriptografia";
         public ConversaRepositorio(BancoContext contexto)
         {
             _contexto = contexto;
         }
         public async Task<Conversa> IniciarConversa(Conversa conversa)
         {
+            
             conversa.Criptografia = AesOperation.gerarChave(32);
+            conversa.Criptografia = AesOperation.Encriptar(cripto, conversa.Criptografia);
             HelpDesk cliente = await _contexto.HelpDesk.FindAsync(conversa.ClienteId);
+            conversa.Cliente = cliente;
             /*HelpDesk funcionario = await _contexto.HelpDesk.FindAsync(conversa.FuncionariosId);
             //atualizando status do funcionário
             if (conversa.TipoConversa != TipoConversa.Conversa) {
@@ -26,17 +30,36 @@ namespace HD_Support_API.Repositorios
                 _contexto.HelpDesk.Update(funcionario);
             }
             conversa.Funcionario = funcionario;*/
-            StatusConversa StatusCorrigido = (StatusConversa)conversa.Status;
-            conversa.Status = StatusCorrigido;
-            conversa.Cliente = cliente;
-            _contexto.Conversa.AddAsync(conversa);
-            _contexto.SaveChangesAsync();
+            conversa.TipoConversa = (TipoConversa)conversa.TipoConversa;
+            if (conversa.Status != null)
+            {
+                conversa.Status = (StatusConversa)conversa.Status;
+            }
+            else
+            {
+                conversa.Status = StatusConversa.NaoAceito;
+            }
+            if (conversa.FuncionariosId == null || conversa.FuncionariosId == conversa.ClienteId)
+            {
+                conversa.FuncionariosId = 37;
+                HelpDesk funcionario = await _contexto.HelpDesk.FindAsync(37);
+                conversa.Funcionario = funcionario;
+            }
+            else
+            {
+                HelpDesk funcionario = await _contexto.HelpDesk.FindAsync(conversa.FuncionariosId);
+                conversa.Funcionario = funcionario;
+            }
+            conversa.Data_inicio = DateTime.Now;
+            await _contexto.Conversa.AddAsync(conversa);
+            await _contexto.SaveChangesAsync();
             return conversa;
         }
         public async Task<Conversa> EnviarMensagem(int idConversa, Mensagens mensagem)
         {
             Conversa conversa = await BuscarConversaPorId(idConversa);
-            mensagem.Mensagem = AesOperation.Encriptar(conversa.Criptografia, mensagem.Mensagem);
+            string criptografia = AesOperation.Descriptar(cripto, conversa.Criptografia);
+            mensagem.Mensagem = AesOperation.Encriptar(criptografia, mensagem.Mensagem);
             mensagem.ConversaId = idConversa;
             mensagem.Usuario = await _contexto.HelpDesk.FindAsync(mensagem.UsuarioId);
             _contexto.Mensagens.AddAsync(mensagem);
@@ -78,7 +101,7 @@ namespace HD_Support_API.Repositorios
             {
                 throw new Exception($"Mensagem de Id:{id} não encontrado na base de dados.");
             }
-            _contexto.Remove(mensagem);
+            _contexto.Mensagens.Remove(mensagem);
             await _contexto.SaveChangesAsync();
 
             return true;
@@ -88,9 +111,10 @@ namespace HD_Support_API.Repositorios
         {
             Conversa conversaPorId = await BuscarConversaPorId(id);
             List<Mensagens> MensagensLista = await _contexto.Mensagens.Where(x => x.ConversaId == id).ToListAsync();
+            string criptografia = AesOperation.Descriptar(cripto, conversaPorId.Criptografia);
             for (int i = 0; i < MensagensLista.Count;i++)
             {
-                MensagensLista[i].Mensagem = AesOperation.Descriptar(conversaPorId.Criptografia, MensagensLista[i].Mensagem);
+                MensagensLista[i].Mensagem = AesOperation.Descriptar(criptografia, MensagensLista[i].Mensagem);
             }
             return MensagensLista;
         }
@@ -137,13 +161,13 @@ namespace HD_Support_API.Repositorios
         {
             TipoConversa tipoConversa = (TipoConversa)tipo;
             List<Conversa> ConversaLista;
-            if (aceito)
+            if (!aceito)
             {
-                ConversaLista = await _contexto.Conversa.Where(x => x.TipoConversa == tipoConversa && x.FuncionariosId==null).ToListAsync();
+                ConversaLista = await _contexto.Conversa.Where(x => x.TipoConversa == tipoConversa && x.Status==StatusConversa.NaoAceito).ToListAsync();
             }
             else
             {
-                ConversaLista = await _contexto.Conversa.Where(x => x.TipoConversa == tipoConversa && x.FuncionariosId!=null).ToListAsync();
+                ConversaLista = await _contexto.Conversa.Where(x => x.TipoConversa == tipoConversa && x.Status!=StatusConversa.NaoAceito).ToListAsync();
             }
             
             return ConversaLista;
