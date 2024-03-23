@@ -12,10 +12,12 @@ namespace HD_Support_API.Controllers
     public class HelpDeskController : ControllerBase
     {
         private readonly IHelpDeskRepositorio _repositorio;
+        private readonly IEmailSender _SendEmailRepository;
 
-        public HelpDeskController(IHelpDeskRepositorio repositorio)
+        public HelpDeskController(IHelpDeskRepositorio repositorio, IEmailSender emailSender)
         {
             _repositorio = repositorio;
+            _SendEmailRepository = emailSender;
         }
 
         [HttpGet]
@@ -73,7 +75,7 @@ namespace HD_Support_API.Controllers
         {
             var ExcluirPerfil = await _repositorio.ExcluirHelpDesk(id);
 
-            if (ExcluirPerfil == null)
+            if (ExcluirPerfil != true)
             {
                 return NotFound($"Cadastro com ID:{id} não encontrado");
             }
@@ -83,13 +85,13 @@ namespace HD_Support_API.Controllers
 
         [HttpPost]
         [Route("Login-HelpDesk")]
-        public async Task<IActionResult> Login([FromBody] HelpDesk request)
+        public async Task<IActionResult> Login([FromBody] string email, string senha)
         {
-            var result = await _repositorio.Login(request.Email, request.Senha);
+            var result = await _repositorio.Login(email, senha);
 
-            if (result)
+            if (result != null)
             {
-                return Ok("Autenticado");
+                return Ok(result);
             }
 
             return Unauthorized("Não autorizado");
@@ -102,6 +104,21 @@ namespace HD_Support_API.Controllers
             var result = await _repositorio.AtualizarStatus(id, status);
 
             return Ok(result);
+        }
+
+        [HttpPost]
+        [Route("Recuperacao-Senha")]
+        public async Task<IActionResult> EnviarEmail(string email)
+        {
+            try
+            {
+                await _repositorio.RecuperarSenha(email);
+                return Ok("E-mail de recuperação de senha enviado com sucesso.");
+            }
+            catch
+            {
+                return StatusCode(500, $"Ocorreu um erro ao enviar o e-mail de recuperação de senha");
+            }
         }
     }
 }

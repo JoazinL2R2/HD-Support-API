@@ -7,10 +7,12 @@ namespace HD_Support_API.Repositorios.Interfaces
         Task<List<HelpDesk>> ListarHelpDesk();
         Task<HelpDesk> BuscarHelpDesk(string nome);
         Task<HelpDesk> BuscarHelpDeskPorID(int id);
+        Task<int?> BuscarHelpDeskPorEmail(string email);
         Task<HelpDesk> AdicionarHelpDesk(HelpDesk helpDesk);
         Task<HelpDesk> AtualizarHelpDesk(HelpDesk helpDesk, int id);
         Task<bool> ExcluirHelpDesk(int id);
-        Task<bool> Login(string email, string senha);
+        Task<HelpDesk> Login(string email, string senha);
         Task<bool> AtualizarStatus(int id, int status);
+        Task RecuperarSenha(string email);
     }
 }

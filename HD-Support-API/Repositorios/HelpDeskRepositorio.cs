@@ -2,6 +2,7 @@
 using HD_Support_API.Enums;
 using HD_Support_API.Models;
 using HD_Support_API.Repositorios.Interfaces;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -12,10 +13,12 @@ namespace HD_Support_API.Repositorios
     public class HelpDeskRepositorio : IHelpDeskRepositorio
     {
         private readonly BancoContext _contexto;
+        private readonly IEmailSender _SendEmailRepository;
 
-        public HelpDeskRepositorio(BancoContext contexto)
+        public HelpDeskRepositorio(BancoContext contexto, IEmailSender sendEmailRepository)
         {
             _contexto = contexto;
+            _SendEmailRepository = sendEmailRepository;
         }
 
         public async Task<HelpDesk> AdicionarHelpDesk(HelpDesk helpDesk)
@@ -51,12 +54,12 @@ namespace HD_Support_API.Repositorios
 
         public async Task<HelpDesk> BuscarHelpDeskPorID(int id)
         {
-            var busca = await _contexto.HelpDesk.FirstOrDefaultAsync(x => x.Id == id);
-            if (busca == null)
+            HelpDesk helpDesk = await _contexto.HelpDesk.FirstOrDefaultAsync(x => x.Id == id);
+            if (helpDesk == null)
             {
                 throw new Exception("ID não encontrado.");
             }
-            return busca;
+            return helpDesk;
         }
 
 
@@ -80,21 +83,14 @@ namespace HD_Support_API.Repositorios
             return await _contexto.HelpDesk.ToListAsync();
         }
 
-        public async Task<bool> Login(HelpDesk helpdesk)
+        public async Task<HelpDesk> Login(string email, string senha)
         {
-            if (await _contexto.HelpDesk.AnyAsync(x => x.Email == helpdesk.Email && x.Senha == helpdesk.Senha))
+            var busca = await _contexto.HelpDesk.FirstOrDefaultAsync(x => x.Email == email && x.Senha == senha);
+            if (busca != null)
             {
-                return true;
+                return busca;
             }
-            return false;
-        }
-        public async Task<bool> Login(string email, string senha)
-        {
-            if (await _contexto.HelpDesk.AnyAsync(x => x.Email == email && x.Senha == senha))
-            {
-                return true;
-            }
-            return false;
+            throw new Exception("Login invalido");
         }
 
         public async Task<bool> AtualizarStatus(int id, int status)
@@ -109,6 +105,40 @@ namespace HD_Support_API.Repositorios
             _contexto.HelpDesk.Update(busca);
             await _contexto.HelpDesk.ToListAsync();
             return true;
+        }
+
+        public async Task RecuperarSenha(string email)
+        {
+            int? idHelpDesk = await BuscarHelpDeskPorEmail(email);
+
+            if (idHelpDesk == null)
+            {
+                throw new Exception("Nenhum HelpDesk encontrado com o email fornecido.");
+            }
+            var texto = $"Seu link de redefinição de senha é: https://localhost:7299/api/HelpDesk/Editar-Perfil-HelpDesk/{idHelpDesk}";
+            await _SendEmailRepository.SendEmailAsync(email, "Redefinição de senha HD-Support", texto);
+        }
+
+
+
+        public async Task<int?> BuscarHelpDeskPorEmail(string email)
+        {
+            if (email == null)
+            {
+                throw new Exception("Email vazio");
+            }
+
+            var idHelpDesk = await _contexto.HelpDesk
+                                            .Where(x => x.Email == email)
+                                            .Select(x => x.Id)
+                                            .FirstOrDefaultAsync();
+
+            if (idHelpDesk == null)
+            {
+                throw new Exception("Nenhum HelpDesk encontrado com o email fornecido.");
+            }
+
+            return idHelpDesk;
         }
     }
 }

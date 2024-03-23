@@ -6,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddTransient<IEmailSender, EmailSenderRepositorio>();
+
 // Adicione serviços ao contêiner.
 builder.Services.AddControllers();
 
@@ -18,7 +20,6 @@ builder.Services.AddScoped<IEmprestimoRepositorio, EmprestimoRepositorio>();
 builder.Services.AddScoped<IFuncionarioRepositorio, FuncionarioRepositorio>();
 builder.Services.AddScoped<IHelpDeskRepositorio, HelpDeskRepositorio>();
 builder.Services.AddScoped<IConversaRepositorio, ConversaRepositorio>();
-
 //suporte a CORS
 builder.Services.AddCors(options =>
 {
