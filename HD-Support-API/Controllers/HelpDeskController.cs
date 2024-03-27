@@ -83,16 +83,11 @@ namespace HD_Support_API.Controllers
 
         [HttpPost]
         [Route("Login-HelpDesk")]
-        public async Task<IActionResult> Login([FromBody] HelpDesk request)
+        public async Task<IActionResult> Login(string email, string senha)
         {
-            var result = await _repositorio.Login(request.Email, request.Senha);
+            var result = await _repositorio.Login(email, senha);
 
-            if (result)
-            {
-                return Ok("Autenticado");
-            }
-
-            return Unauthorized("Não autorizado");
+            return Ok(result);
         }
 
         [HttpPut]

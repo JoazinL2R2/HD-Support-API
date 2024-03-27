@@ -22,7 +22,7 @@ namespace HD_Support_API.Repositorios
         public async Task<HelpDesk> AdicionarHelpDesk(HelpDesk helpDesk)
         {
             helpDesk.Senha = AesOperation.CriarHash(helpDesk.Senha);
-            _contexto.HelpDesk.AddAsync(helpDesk);
+            await _contexto.HelpDesk.AddAsync(helpDesk);
             await _contexto.SaveChangesAsync();
             return helpDesk;
         }
@@ -48,7 +48,12 @@ namespace HD_Support_API.Repositorios
 
         public async Task<HelpDesk> BuscarHelpDesk(string nome)
         {
-            return await _contexto.HelpDesk.FirstOrDefaultAsync(x => x.Nome == nome);
+            var busca = await _contexto.HelpDesk.FirstOrDefaultAsync(x => x.Nome == nome);
+            if (busca != null)
+            {
+                return busca;
+            }
+            throw new Exception("Nome não encontrado.");
         }
 
         public async Task<HelpDesk> BuscarHelpDeskPorID(int id)
@@ -82,21 +87,14 @@ namespace HD_Support_API.Repositorios
             return await _contexto.HelpDesk.ToListAsync();
         }
 
-        public async Task<bool> Login(HelpDesk helpdesk)
+        public async Task<HelpDesk> Login(string email, string senha)
         {
-            if (await _contexto.HelpDesk.AnyAsync(x => x.Email == helpdesk.Email && x.Senha == helpdesk.Senha))
+            var tentativaLogin = await _contexto.HelpDesk.FirstOrDefaultAsync(x => x.Email == email && x.Senha == AesOperation.CriarHash(senha));
+            if (tentativaLogin!=null)
             {
-                return true;
+                return tentativaLogin;
             }
-            return false;
-        }
-        public async Task<bool> Login(string email, string senha)
-        {
-            if (await _contexto.HelpDesk.AnyAsync(x => x.Email == email && AesOperation.CriarHash(x.Senha) == senha))
-            {
-                return true;
-            }
-            return false;
+            throw new Exception("Email ou senha incorretos.");
         }
 
         public async Task<bool> AtualizarStatus(int id, int status)

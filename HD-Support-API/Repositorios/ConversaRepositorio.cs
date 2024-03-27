@@ -62,8 +62,8 @@ namespace HD_Support_API.Repositorios
             mensagem.Mensagem = AesOperation.Encriptar(criptografia, mensagem.Mensagem);
             mensagem.ConversaId = idConversa;
             mensagem.Usuario = await _contexto.HelpDesk.FindAsync(mensagem.UsuarioId);
-            _contexto.Mensagens.AddAsync(mensagem);
-            _contexto.SaveChangesAsync();
+            await _contexto.Mensagens.AddAsync(mensagem);
+            await _contexto.SaveChangesAsync();
             return conversa;
         }
 
